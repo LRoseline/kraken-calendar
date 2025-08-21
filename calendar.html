@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>달력 For Kraken</title>
+        <style>
+            @font-face {
+                font-family: 'EliceDigitalBaeum-Bd';
+                src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_elice@1.0/EliceDigitalBaeum-Bd.woff2') format('woff2');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            body {
+                width: 640px;
+                height: 640px;
+                margin: 0;
+                background: url('/bg.png');
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+
+            table {
+                margin: auto;
+                width: 500px;
+                table-layout: fixed;
+                border-collapse: collapse;
+                font-size: 28pt;
+                background-color: #000A;
+                border-radius: 8px;
+            }
+
+            .kraken-main {
+                position: fixed;
+                width: 640px;
+                height: 640px;
+                display: flex;
+            }
+
+            th, td {
+                text-align: center;
+                padding: 2px;
+                color: #FFF;
+            }
+
+            td {
+                height: 10px;
+            }
+
+            .month {
+                color: #FFF;
+                font-family: 'EliceDigitalBaeum-Bd';
+                text-align: center;
+            }
+
+            .month > .number {
+                margin: -10pt 0;
+                font-size: 36pt;
+            }
+
+            .month > .script {
+                margin: -15pt 0 0 0;
+                font-size: 12pt;
+            }
+
+            .today {
+                color: #000;
+                font-weight: bolder;
+                background-color: silver;
+                border-radius: 8px;
+            }
+
+            .circle {
+                width: 640px;
+                height: 640px;
+                background-color: #F006;
+                border-radius: 50%;
+            }
+
+            .Saturday {
+                color: #0AF;
+            }
+
+            .rest {
+                color: #F50;
+            }
+
+            @media screen and (max-width: 320px) {
+                body {
+                    width: 320px;
+                    height: 320px;
+                }
+
+                .kraken-main {
+                    width: 320px;
+                    height: 320px;
+                }
+
+                .circle {
+                    width: 320px;
+                    height: 320px;
+                }
+
+                table {
+                    width: 250px;
+                    font-size: 12pt;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <div class="kraken-main">
+                <table>
+                    <!-- <thead>
+                        <tr class="day-of">
+                            <th class="rest">S</th>
+                            <th>M</th>
+                            <th>T</th>
+                            <th>W</th>
+                            <th>T</th>
+                            <th>F</th>
+                            <th class="Saturday">S</th>
+                        </tr>
+                    </thead> -->
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="month">
+                <div class="number">00</div>
+                <div class="script">Loading</div>
+            </div>
+        </div>
+        <!-- <div class="circle"></div> -->
+        <script>
+            const date = new Date();
+
+            const months = ["NONE", "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+
+            const currentMonth = date.getMonth() + 1; // 1~12
+            const currentMonthSub = months[currentMonth];
+
+            const divNumber = document.querySelector(".number");
+            const divSub = document.querySelector(".script");
+
+            divNumber.innerHTML = currentMonth;
+            divSub.innerHTML = currentMonthSub;
+
+            const tbody = document.querySelector("tbody");
+
+            // 이번 달 시작 요일, 마지막 날짜 구하기
+            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+            const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+
+            let html = "<tr>";
+
+            // 앞쪽 빈칸
+            for (let i = 0; i < firstDay; i++) {
+                html += "<td></td>";
+            }
+
+            // 날짜 채우기
+            for (let d = 1; d <= lastDate; d++) {
+                const dayOfWeek = (firstDay + d - 1) % 7;
+                const isToday = (d === date.getDate());
+
+                if (isToday) {
+                    html += `<td class="today">${d}</td>`;
+                } else {
+                    if (dayOfWeek == 0) {
+                        html += `<td class="rest">${d}</td>`;
+                    } else if (dayOfWeek === 6) {
+                        html += `<td class="Saturday">${d}</td>`;
+                    } else {
+                        html += `<td>${d}</td>`;
+                    }
+                }
+
+                if (dayOfWeek === 6 && d !== lastDate) { // 토요일마다 줄바꿈
+                    html += "</tr><tr>";
+                }
+            }
+
+            // 뒷쪽 빈칸
+            const remaining = (7 - (firstDay + lastDate) % 7) % 7;
+            for (let i = 0; i < remaining; i++) {
+                html += "<td></td>";
+            }
+
+            html += "</tr>";
+            tbody.innerHTML = html;
+        </script>
+    </body>
+</html>
